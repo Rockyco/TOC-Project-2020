@@ -10,25 +10,51 @@ from linebot.models import MessageEvent, TextMessage, TextSendMessage
 from fsm import TocMachine
 from utils import send_text_message
 
+import sqlite3
+
 load_dotenv()
 
 
 machine = TocMachine(
-    states=["user", "state1", "state2"],
+    states=["user", "dinner", "trivia","wine","shit","movie","Gan"],
     transitions=[
         {
             "trigger": "advance",
             "source": "user",
-            "dest": "state1",
-            "conditions": "is_going_to_state1",
+            "dest": "Gan",
+            "conditions": "is_going_to_Gan",
         },
         {
             "trigger": "advance",
             "source": "user",
-            "dest": "state2",
-            "conditions": "is_going_to_state2",
+            "dest": "movie",
+            "conditions": "is_going_to_movie",
         },
-        {"trigger": "go_back", "source": ["state1", "state2"], "dest": "user"},
+        {
+            "trigger": "advance",
+            "source": "user",
+            "dest": "shit",
+            "conditions": "is_going_to_shit",
+        },
+        {
+            "trigger": "advance",
+            "source": "user",
+            "dest": "dinner",
+            "conditions": "is_going_to_dinner",
+        },
+        {
+            "trigger": "advance",
+            "source": "user",
+            "dest": "trivia",
+            "conditions": "is_going_to_trivia",
+        },
+        {
+            "trigger": "advance",
+            "source": "user",
+            "dest": "wine",
+            "conditions": "is_going_to_wine",
+        },
+        {"trigger": "go_back", "source": ["Gan","shit","dinner", "trivia", "wine","movie"], "dest": "user"},
     ],
     initial="user",
     auto_transitions=False,
@@ -57,7 +83,8 @@ def callback():
     signature = request.headers["X-Line-Signature"]
     # get request body as text
     body = request.get_data(as_text=True)
-    app.logger.info("Request body: " + body)
+    #app.logger.info("Request body: " + body)
+    print("Request body: " + body)
 
     # parse webhook body
     try:
@@ -84,7 +111,8 @@ def webhook_handler():
     signature = request.headers["X-Line-Signature"]
     # get request body as text
     body = request.get_data(as_text=True)
-    app.logger.info(f"Request body: {body}")
+    #app.logger.info(f"Request body: {body}")
+    print("Request body: " +"{" + body + "}")
 
     # parse webhook body
     try:
@@ -100,11 +128,11 @@ def webhook_handler():
             continue
         if not isinstance(event.message.text, str):
             continue
-        print(f"\nFSM STATE: {machine.state}")
-        print(f"REQUEST BODY: \n{body}")
+        print("\nFSM STATE: {machine.state}")
+        print("REQUEST BODY: \n{body}")
         response = machine.advance(event)
         if response == False:
-            send_text_message(event.reply_token, "Not Entering any State")
+            send_text_message(event.reply_token, "你說啥，我資質努盹不善言辭，來談些我會的吧！\n例如：\n＊來點冷知識＊＊＊＊＊\n＊＊去哪喝酒＊＊＊＊＊\n＊＊＊晚餐吃啥＊＊＊＊\n＊＊＊＊推薦電影＊＊＊\n＊＊＊＊＊來點梗圖＊＊\n＊＊＊＊＊＊韓國語錄＊")
 
     return "OK"
 
@@ -117,4 +145,4 @@ def show_fsm():
 
 if __name__ == "__main__":
     port = os.environ.get("PORT", 8000)
-    app.run(host="0.0.0.0", port=port, debug=True)
+    app.run(host="127.0.0.1", port=port, debug=True)
