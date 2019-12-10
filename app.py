@@ -16,8 +16,58 @@ load_dotenv()
 
 
 machine = TocMachine(
-    states=["user", "dinner", "trivia","wine","shit","movie","Gan"],
+    states=["user","fast","slow","roast","boxed","fastfood",\
+         "dinner", "trivia","wine","shit","movie","Gan","tainan"\
+            ,"exotic","steak"],
     transitions=[
+        {
+            "trigger": "advance",
+            "source": "slow",
+            "dest": "steak",
+            "conditions": "is_going_to_steak",
+        },
+        {
+            "trigger": "advance",
+            "source": "slow",
+            "dest": "exotic",
+            "conditions": "is_going_to_exotic",
+        },
+        {
+            "trigger": "advance",
+            "source": "dinner",
+            "dest": "slow",
+            "conditions": "is_going_to_slow",
+        },
+        {
+            "trigger": "advance",
+            "source": "dinner",
+            "dest": "fast",
+            "conditions": "is_going_to_fast",
+        },
+        {
+            "trigger": "advance",
+            "source": "slow",
+            "dest": "roast",
+            "conditions": "is_going_to_roast",
+        },
+        {
+            "trigger": "advance",
+            "source": "fast",
+            "dest": "boxed",
+            "conditions": "is_going_to_boxed",
+        },
+        {
+            "trigger": "advance",
+            "source": "fast",
+            "dest": "fastfood",
+            "conditions": "is_going_to_fastfood",
+        },
+        {
+            "trigger": "advance",
+            "source": "wine",
+            "dest": "tainan",
+            "conditions": "is_going_to_tainan",
+        },
         {
             "trigger": "advance",
             "source": "user",
@@ -54,7 +104,9 @@ machine = TocMachine(
             "dest": "wine",
             "conditions": "is_going_to_wine",
         },
-        {"trigger": "go_back", "source": ["Gan","shit","dinner", "trivia", "wine","movie"], "dest": "user"},
+        {"trigger": "go_back", "source": ["roast","boxed","fastfood",\
+          "trivia","shit","movie","Gan","tainan"\
+            ,"exotic","steak"], "dest": "user"},
     ],
     initial="user",
     auto_transitions=False,
